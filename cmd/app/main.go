@@ -4,28 +4,31 @@ import (
 	"fmt"
 	"net/http"
 
+	"go-app/app/app"
 	"go-app/app/router"
 	"go-app/config"
 	lr "go-app/util/logger"
 )
 
 func main() {
-	appConfig := config.AppConfig()
+	appConf := config.AppConfig()
 
-	logger := lr.New(appConfig.Debug)
+	logger := lr.New(appConf.Debug)
 
-	appRouter := router.New()
+	application := app.New(logger)
 
-	address := fmt.Sprintf(":%d", appConfig.Server.Port)
+	appRouter := router.New(application)
+
+	address := fmt.Sprintf(":%d", appConf.Server.Port)
 
 	logger.Info().Msgf("Starting server %v", address)
 
 	s := &http.Server{
 		Addr:         address,
 		Handler:      appRouter,
-		ReadTimeout:  appConfig.Server.TimeoutRead,
-		WriteTimeout: appConfig.Server.TimeoutWrite,
-		IdleTimeout:  appConfig.Server.TimeoutIdle,
+		ReadTimeout:  appConf.Server.TimeoutRead,
+		WriteTimeout: appConf.Server.TimeoutWrite,
+		IdleTimeout:  appConf.Server.TimeoutIdle,
 	}
 
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
