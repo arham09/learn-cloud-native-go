@@ -2,21 +2,23 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"go-app/app/router"
 	"go-app/config"
+	lr "go-app/util/logger"
 )
 
 func main() {
 	appConfig := config.AppConfig()
 
+	logger := lr.New(appConfig.Debug)
+
 	appRouter := router.New()
 
 	address := fmt.Sprintf(":%d", appConfig.Server.Port)
 
-	log.Println("Running on server 6969")
+	logger.Info().Msgf("Starting server %v", address)
 
 	s := &http.Server{
 		Addr:         address,
@@ -27,6 +29,6 @@ func main() {
 	}
 
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal("Server startup failed")
+		logger.Fatal().Err(err).Msg("Server startup failed")
 	}
 }
