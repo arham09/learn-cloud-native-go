@@ -9,9 +9,9 @@ import (
 
 func New(a *app.App) *chi.Mux {
 	l := a.Logger()
-	r := chi.NewRouter()
 
-	r.MethodFunc("GET", "/", handler.NewHandler(a.HandleIndex, l))
+	r := chi.NewRouter()
+	r.Method("GET", "/", handler.NewHandler(a.HandleIndex, l))
 
 	return r
 }
